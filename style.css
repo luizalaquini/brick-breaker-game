@@ -1,0 +1,11 @@
+body {
+  display: flex;
+  justify-content: center;
+}
+
+#canvas{
+  background-image: url("assets/img/background.gif");
+  width: 1280px;
+  height: 720px;
+  padding: 0; margin: 0;
+}
