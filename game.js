@@ -4,7 +4,8 @@ var scale = 3;
 canvas.width = canvas.width * scale;
 canvas.height = canvas.height * scale;
 
-//=================== VARIABLES, CONSTANTS AND OBJECTS ====================
+//=================== GAME VARIABLES, CONSTANTS AND OBJECTS ====================
+
 let LIFE = 5; 
 let SCORE = 0;
 const SCORE_UNIT = 1;
@@ -18,7 +19,7 @@ let rightArrow = false;
 const PADDLE_HEIGHT = 10;
 const PADDLE_WIDTH = 100;
 const PADDLE_MARGIN_BOTTOM = 20;
-const PADDLE_FILL = "#fff";
+const PADDLE_FILL = '#fff';
 
 let paddle = {
   x: canvas.width / 2 - PADDLE_WIDTH / 2,
@@ -43,27 +44,42 @@ let ball = {
 //=================== FUNCTIONS ====================
 
 setInterval(draw, 10);
+loop();
+
+function loop() {
+  draw();
+  if (!isPaused) {
+    update();
+  }
+}
+
+function update() {
+  movePaddle();
+  moveBall();
+  movePowerUp();
+  ballWallCollision();
+}
 
 // Function to draw the game over screen
 function draw(){
-    // Move elements
-    movePaddle();
-
-    
-    // Cleans the canvas
-    ctx.clearRect(0,0,canvas.width,canvas.height)
-    // Draw elements
-    drawPaddle();
-    drawBall();
+  // Move elements
+  movePaddle();
+  moveBall();
+  
+  // Cleans the canvas
+  ctx.clearRect(0,0,canvas.width,canvas.height)
+  // Draw elements
+  drawPaddle();
+  drawBall();
 }
 
 // Function to draw the paddle
 function drawPaddle() {
-    ctx.beginPath();
-    ctx.rect(paddle.x,paddle.y,paddle.width,paddle.height);
-    ctx.fillStyle=PADDLE_FILL;
-    ctx.fill();
-    ctx.closePath();
+  ctx.beginPath();
+  ctx.rect(paddle.x,paddle.y,paddle.width,paddle.height);
+  ctx.fillStyle=PADDLE_FILL;
+  ctx.fill();
+  ctx.closePath();
 }
 
 // Function to move the paddle
@@ -77,11 +93,46 @@ function movePaddle() {
 
 // Function to draw the ball
 function drawBall(){
-    ctx.beginPath();
+  ctx.beginPath();
 	ctx.arc(ball.x,ball.y,ball.radius,0,Math.PI*2);
 	ctx.fillStyle=BALL_COLOR;
 	ctx.fill();
 	ctx.closePath();
+}
+
+// Function to move the ball
+function moveBall() {
+  ball.x += ball.speedX;
+  ball.y += ball.speedY;
+}
+
+// Function that treats when the ball hits the wall
+function ballWallCollision() {
+  if (ball.x + ball.radius >= canvas.width || ball.x - ball.radius <= 0) {
+    ball.speedX = -ball.speedY;
+  }
+  if (ball.y - ball.radius < 0) {
+    ball.speedY = -ball.speedY;
+  }
+  if (ball.y + ball.radius >= canvas.height - PADDLE_MARGIN_BOTTOM) {
+    LIFE--; // Lose Life
+    resetBall();
+  }
+}
+
+function resetBall() {
+  isPaused = true;
+  ball.x = canvas.width / 2 - BALL_RADIUS / 2;
+  ball.y = paddle.y - BALL_RADIUS;
+  ball.speedX = 3;
+  ball.speedY = -3;
+  paddle = {
+    x: canvas.width / 2 - PADDLE_WIDTH / 2,
+    y: canvas.height - PADDLE_MARGIN_BOTTOM - PADDLE_HEIGHT,
+    width: PADDLE_WIDTH,
+    height: PADDLE_HEIGHT,
+    speed: 5,
+  };
 }
 
 //=================== EVENT LISTENERS ====================
