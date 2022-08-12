@@ -6,10 +6,11 @@ canvas.height = canvas.height * scale;
 
 //=================== GAME VARIABLES, CONSTANTS AND OBJECTS ====================
 
-let LIFE = 3; 
+let LIFES = 5; 
 let SCORE = 0;
 const SCORE_UNIT = 1;
 let GAME_OVER = false;
+let CURRENT_LEVEL = 1;
 
 let isPaused = true;
 
@@ -79,21 +80,42 @@ let bricks = [];
 //==================== LEVELS =====================
 
 const level1 = 
-[[1, 1, 1, 1, 1, 1, 1, 1],
- [1, 1, 1, 1, 1, 1, 1, 1],
- [1, 1, 1, 1, 1, 1, 1, 1],
+[ [1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
 const level2 = 
-[[1, 1, 1, 3, 3, 1, 1, 1],
- [2, 2, 1, 1, 1, 1, 2, 2],
- [2, 2, 3, 3, 3, 3, 2, 2],
+[ [3, 3, 3, 3, 3, 3, 3, 3],
+  [2, 2, 2, 2, 2, 2, 2, 2],
+  [1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
+const level3 = 
+[ [3, 0, 3, 0, 3, 0, 3, 0],
+  [0, 2, 0, 2, 0, 2, 0, 2],
+  [3, 0, 3, 0, 3, 0, 3, 0],
+  [0, 2, 0, 2, 0, 2, 0, 2],
+];
+
+const level4 =
+[ [3, 3, 3, 3, 3, 3, 3, 3],
+  [3, 2, 2, 1, 2, 1, 2, 3],
+  [3, 2, 1, 2, 1, 2, 1, 3],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+];
+
+const level5 = 
+[ [3, 3, 3, 3, 3, 3, 3, 3],
+  [3, 2, 2, 1, 2, 1, 2, 3],
+  [3, 2, 1, 2, 1, 2, 1, 3],
+  [3, 2, 1, 2, 1, 2, 1, 3],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+];
 
 //=================== FUNCTIONS ====================
 
-setBricksByLevel(2);
+setBricksByLevel(3);
 setInterval(draw, 10);
 
 // Function to draw the game over screen
@@ -102,6 +124,8 @@ function draw(){
   ballWallCollision();
   ballPaddleCollision();
   ballBrickCollision();
+  winLevel();
+  showLifes();
   
   // Move elements
   movePaddle();
@@ -271,6 +295,22 @@ function setBricksByLevel(level){
       bricks.push(newBrick);   
     }    
   }
+}
+
+// Function to start another level when the player wins the current level
+function winLevel(){
+  if (bricks.length == 0) {
+    CURRENT_LEVEL++;
+    setBricksByLevel(CURRENT_LEVEL);
+    resetBall();
+  }
+}
+
+// Function to show number of lifes on the top ==>> ainda nao ta funfando
+function showLifes(){
+  ctx.font = "36px Lato";
+  ctx.fillStyle = "red";
+  ctx.fillText("Lifes: " + LIFES, canvas.width - 100, 30);
 }
 
 //=================== EVENT LISTENERS ====================
