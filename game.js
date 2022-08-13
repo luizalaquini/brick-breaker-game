@@ -90,8 +90,8 @@ const level2 =
   [2, 2, 2, 2, 2, 2, 2, 2],
   [1, 1, 1, 1, 1, 1, 1, 1],
 ];
-
-const level3 = 
+/*
+const level3 = // O zero (0) é para ser ausência de tijolo
 [ [3, 0, 3, 0, 3, 0, 3, 0],
   [0, 2, 0, 2, 0, 2, 0, 2],
   [3, 0, 3, 0, 3, 0, 3, 0],
@@ -112,6 +112,7 @@ const level5 =
   [3, 2, 1, 2, 1, 2, 1, 3],
   [3, 3, 3, 3, 3, 3, 3, 3],
 ];
+*/
 
 //=================== FUNCTIONS ====================
 
@@ -124,8 +125,7 @@ function draw(){
   ballWallCollision();
   ballPaddleCollision();
   ballBrickCollision();
-  winLevel();
-  showLifes();
+  //winLevel();
   
   // Move elements
   movePaddle();
@@ -254,7 +254,7 @@ function ballBrickCollision() {
 
 // Function that treats when the player loses a life
 function loseLife(){
-  LIFE--; // Lose Life
+  LIFES--; // Lose Life
   resetBall();
 }
 
@@ -306,12 +306,15 @@ function winLevel(){
   }
 }
 
-// Function to show number of lifes on the top ==>> ainda nao ta funfando
-function showLifes(){
-  ctx.font = "36px Lato";
-  ctx.fillStyle = "red";
-  ctx.fillText("Lifes: " + LIFES, canvas.width - 100, 30);
-}
+// function showLifes()
+
+/* FALTANDO:
+ - Mostrar vidas em cima
+ - talvez mostrar level atual tbm
+ - Tratar quando ganha o jogo
+ - Tratar quando perde o jogo (sem mais vidas)
+ - BUG quando tem mais de 3 linhas de tijolos
+*/
 
 //=================== EVENT LISTENERS ====================
 
