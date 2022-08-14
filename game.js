@@ -279,7 +279,6 @@ function loseLife(){
 
 // Function that resets the ball when the player loses a life
 function resetBall() {
-  isPaused = true;
   ball.x = canvas.width / 2 - BALL_RADIUS / 2;
   ball.y = paddle.y - BALL_RADIUS - 1;
   ball.moving = false;
@@ -373,10 +372,8 @@ document.addEventListener("keydown", function (event) {
   const keyCode = event.code;
   if (keyCode === "ArrowLeft" || keyCode === "KeyA") {
     leftArrow = true;
-    isPaused = false;
   } else if (keyCode === "ArrowRight" || keyCode === "KeyD") {
     rightArrow = true;
-    isPaused = false;
   } else if (keyCode === "Space") {
     ball.moving = true;
   }
