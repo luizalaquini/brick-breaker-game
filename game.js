@@ -364,6 +364,8 @@ function resetGame() {
   CURRENT_LEVEL=1;
   setBricksByLevel(CURRENT_LEVEL);
   resetBall();
+  leftArrow=false;
+  rightArrow=false;
 }
 
 //=================== EVENT LISTENERS ====================
