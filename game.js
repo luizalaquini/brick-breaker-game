@@ -141,6 +141,7 @@ function draw(){
 
 // Function that updates the states of the game
 function update(){
+  // Verifica colisões
   ballWallCollision();
   ballPaddleCollision();
   ballBrickCollision();
@@ -386,5 +387,5 @@ document.addEventListener("keyup", function (event) {
         leftArrow = false;
     } else if (keyCode === "ArrowRight" || keyCode === "KeyD") {
         rightArrow = false;
-  }
+    }
 });
