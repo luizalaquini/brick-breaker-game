@@ -7,12 +7,11 @@ canvas.height = canvas.height * scale;
 //=================== GAME VARIABLES, CONSTANTS AND OBJECTS ====================
 
 let LIFES = 5; 
-let SCORE = 0;
-const SCORE_UNIT = 1;
-let GAME_OVER = false;
 let CURRENT_LEVEL = 1;
+let MAX_LEVEL = 6;
 
-let isPaused = true;
+const GAME_SONG = new Audio();
+GAME_SONG.src = "./assets/audio/gameOn.mp3";
 
 let leftArrow = false;
 let rightArrow = false;
@@ -54,6 +53,7 @@ let ball = {
 
 const BRICK_HEIGHT = 20;
 const BRICK_WIDTH = 75;
+const BRICK_OFFSET_Y = 10;
 const BRICK_DISTANCE_X = 5;
 const BRICK_DISTANCE_Y = 15;
 
@@ -63,6 +63,8 @@ const MID_STRONG_BRICK_FILL = "#80097e"
 const MID_STRONG_BRICK_STROKE = "#3c003b";
 const STRONG_BRICK_FILL = "#00439f";
 const STRONG_BRICK_STROKE = "#001351";
+const SUPER_STRONG_BRICK_FILL = "#f78501";
+const SUPER_STRONG_BRICK_STROKE = "#a75501";
 
 const BRICK_STROKE_WIDTH = 2.5;
 
@@ -76,67 +78,79 @@ let brick = {
 
 let bricks = [];
 
-
 //==================== LEVELS =====================
 
 const level1 = 
 [ [1, 1, 1, 1, 1, 1, 1, 1],
   [1, 1, 1, 1, 1, 1, 1, 1],
+];
+
+const level2 =
+[ [2, 2, 2, 2, 2, 2, 2, 2],
   [1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-const level2 = 
+const level3 = 
 [ [3, 3, 3, 3, 3, 3, 3, 3],
   [2, 2, 2, 2, 2, 2, 2, 2],
   [1, 1, 1, 1, 1, 1, 1, 1],
 ];
-/*
-const level3 = // O zero (0) é para ser ausência de tijolo
-[ [3, 0, 3, 0, 3, 0, 3, 0],
-  [0, 2, 0, 2, 0, 2, 0, 2],
-  [3, 0, 3, 0, 3, 0, 3, 0],
-  [0, 2, 0, 2, 0, 2, 0, 2],
+
+const level4 = 
+[ [3, 3, 3, 3, 3, 3, 3, 3],
+  [2, 2, 2, 2, 2, 2, 2, 2],
+  [2, 2, 2, 2, 2, 2, 2, 2],
 ];
 
-const level4 =
-[ [3, 3, 3, 3, 3, 3, 3, 3],
-  [3, 2, 2, 1, 2, 1, 2, 3],
-  [3, 2, 1, 2, 1, 2, 1, 3],
-  [3, 3, 3, 3, 3, 3, 3, 3],
+const level5 =
+[ [3, 1, 1, 3, 3, 1, 1, 3],
+  [2, 3, 3, 2, 2, 3, 3, 2],
+  [2, 3, 3, 2, 2, 3, 3, 2],
+  [3, 1, 1, 3, 3, 1, 1, 3],
 ];
 
-const level5 = 
+const level6 = 
 [ [3, 3, 3, 3, 3, 3, 3, 3],
-  [3, 2, 2, 1, 2, 1, 2, 3],
-  [3, 2, 1, 2, 1, 2, 1, 3],
-  [3, 2, 1, 2, 1, 2, 1, 3],
+  [1, 1, 4, 4, 4, 4, 1, 1],
+  [2, 2, 4, 4, 4, 4, 2, 2],
+  [1, 1, 4, 4, 4, 4, 1, 1],
   [3, 3, 3, 3, 3, 3, 3, 3],
 ];
-*/
 
 //=================== FUNCTIONS ====================
 
-setBricksByLevel(3);
+setBricksByLevel(CURRENT_LEVEL);
 setInterval(draw, 10);
 
 // Function to draw the game over screen
 function draw(){
-  //Update states
-  ballWallCollision();
-  ballPaddleCollision();
-  ballBrickCollision();
-  //winLevel();
-  
-  // Move elements
-  movePaddle();
-  moveBall()
-  
+  // Update States
+  update();
   // Cleans the canvas
   ctx.clearRect(0,0,canvas.width,canvas.height)
   // Draw elements
   drawPaddle();
   drawBall();
   drawBricks();
+  
+  showLifesLevel();
+
+  winLevel();
+  gameOver();
+}
+
+// Function that updates the states of the game
+function update(){
+  ballWallCollision();
+  ballPaddleCollision();
+  ballBrickCollision();
+  
+  // Move elements
+  movePaddle();
+  moveBall()
+
+  //Sounds
+  GAME_SONG.play();
 }
 
 // Function to draw the paddle
@@ -179,6 +193,10 @@ function drawBricks(){
         ctx.fillStyle = STRONG_BRICK_FILL;
         ctx.strokeStyle = STRONG_BRICK_STROKE;
         break;
+      case 4: 
+        ctx.fillStyle = SUPER_STRONG_BRICK_FILL;
+        ctx.strokeStyle = SUPER_STRONG_BRICK_STROKE;
+        break;
     }
     
     ctx.beginPath();
@@ -209,15 +227,19 @@ function moveBall() {
 
 // Function that treats when the ball hits the wall
 function ballWallCollision() {
-  //Se colidir com o teto
-  if (ball.x + ball.radius >= canvas.width || ball.x - ball.radius <= 0) {
-    ball.speedX = -ball.speedX;
+  //Se colidir com a parede direita
+  if (ball.x + ball.radius >= canvas.width) {
+    ball.speedX = -Math.abs(ball.speedX);
   }
-  //Se colidir com as paredes
-  if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.width) {
+  //Se colidir com a parede esquerda
+  if (ball.x - ball.radius <= 0){
+    ball.speedX = Math.abs(ball.speedX);
+  }
+  //Se colidir com o teto
+  if (ball.y - ball.radius < 0) {
     ball.speedY = -ball.speedY;
   }
-
+  // Se colidir com o piso
   if (ball.y + ball.radius >= canvas.height) {
     loseLife();
   }
@@ -229,13 +251,10 @@ function ballPaddleCollision() {
     // ball.x - paddle.x
     // 0 - 150°
     // PADDLE_WIDTH - 20°
-    let angle = 150 - (ball.x - paddle.x) * 130 / PADDLE_WIDTH;
+    let angle = 150 - (ball.x - paddle.x) * 120 / PADDLE_WIDTH;
+    console.log(angle);
     ball.speedX = BALL_SPEED * Math.cos(angle*Math.PI/180);
     ball.speedY = -BALL_SPEED * Math.sin(angle*Math.PI/180);
-    
-    //console.log(angle);
-    //ball.speedY = -ball.speedY;
-    //ball.speedX = (ball.x - (paddle.x + paddle.width / 2)) * 0.35;
   }
 }
 
@@ -278,10 +297,24 @@ function setBricksByLevel(level){
     case 2:
       positions = level2;
       break;
+    case 3:
+      positions = level3;
+      break;
+    case 4:
+      positions = level4;
+      break;
+    case 5:
+      positions = level5;
+      break;
+    case 6:
+      positions = level6;
+      break;
     default:
-      positions = level1;
+      positions = [];
       break;
   }
+
+  bricks=[];
 
   for(let row=0; row<positions.length; row++){
     for(let column=0; column<positions[row].length; column++){
@@ -289,7 +322,7 @@ function setBricksByLevel(level){
       let newBrick = Object.assign({}, brick);
       newBrick.x = column * (BRICK_WIDTH+(canvas.width-BRICK_WIDTH*positions[row].length)/(positions[row].length+1)) 
                     + (canvas.width-BRICK_WIDTH*positions[row].length)/(positions[row].length+1);
-      newBrick.y = row * (BRICK_HEIGHT + BRICK_DISTANCE_Y) + BRICK_DISTANCE_Y;
+      newBrick.y = row * (BRICK_HEIGHT + BRICK_DISTANCE_Y) + BRICK_DISTANCE_Y + BRICK_OFFSET_Y;
       newBrick.lifes = positions[row][column];
       //Adiciona ele na lista bricks
       bricks.push(newBrick);   
@@ -299,22 +332,39 @@ function setBricksByLevel(level){
 
 // Function to start another level when the player wins the current level
 function winLevel(){
-  if (bricks.length == 0) {
+  if (CURRENT_LEVEL > MAX_LEVEL) {
+    alert("You Win!");
+    resetGame();
+  } else if (bricks.length == 0) {
     CURRENT_LEVEL++;
     setBricksByLevel(CURRENT_LEVEL);
     resetBall();
   }
 }
 
-// function showLifes()
+// Function to show current number of lifes and current level
+function showLifesLevel() {
+  ctx.font = '16px Lato';
+  ctx.fillStyle = 'white';
+  ctx.fillText('Level: '+ CURRENT_LEVEL+'/'+MAX_LEVEL, 8, 16); //position score on the x,y axis of the canvas
+  ctx.fillText('Lifes: '+ LIFES, 840, 16); //position score on the x,y axis of the canvas
+}
 
-/* FALTANDO:
- - Mostrar vidas em cima
- - talvez mostrar level atual tbm
- - Tratar quando ganha o jogo
- - Tratar quando perde o jogo (sem mais vidas)
- - BUG quando tem mais de 3 linhas de tijolos
-*/
+// Function to end game when the player loses all lifes
+function gameOver() {
+  if (LIFES == 0) {
+    alert("Game Over");
+    resetGame();
+  }
+}
+
+
+function resetGame() {
+  LIFES = 5; 
+  CURRENT_LEVEL=1;
+  setBricksByLevel(CURRENT_LEVEL);
+  resetBall();
+}
 
 //=================== EVENT LISTENERS ====================
 
