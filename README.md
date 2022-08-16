@@ -27,9 +27,6 @@ Victory:
 Game Over:
 ![gameover](https://user-images.githubusercontent.com/72242547/184986688-791c1ca1-24f3-464a-a379-175ab9a53a2f.png)
 
-
-
-
-### Writers
+### Developers
 - Luiza Batista Laquini (LinkedIn: https://www.linkedin.com/in/luizalaquini/)
 - Guilherme Goes Zanetti: (LinkedIn: https://www.linkedin.com/in/guilherme-goes-zanetti-0429631a2/)
